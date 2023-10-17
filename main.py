@@ -15,7 +15,7 @@ class Application(tk.Frame):
     # Creates a button that runs the printTime function when clicked
     def createWidgets(self):
         self.Button = tk.Button(self, text='Print Time',
-            command=self.pTime)
+            command=self.printTime)
         self.Button.grid()
 
 
