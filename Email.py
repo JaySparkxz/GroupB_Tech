@@ -1,76 +1,61 @@
 from email import encoders
-from email.message import EmailMessage
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import ssl
+import os
 import smtplib
-import pathlib
+import ssl
+from DataManagement.DataController import DataControl
 
+def send_email():
+    # Receiver emails
+    receiver_emails = ['']
 
-recieverEmails = [
-    
-   'Chrisathanasi859@gmail.com',
-  
-    
-    
-    ]
+    # Sender email credentials
+    email_sender = 'pythonbot562@gmail.com'
+    email_password = 'ldbj bunk mpfp wktc'
 
+    # Email subject
+    subject = 'Time card'
 
+    # Create DataControl instance and set the email body with CSV contents
+    data_control = DataControl()
+    body = data_control.setEmailBody(data_control.getFileName())
 
+    # Create the email
+    em = MIMEMultipart()
+    em['From'] = email_sender
+    em['To'] = ','.join(receiver_emails)
+    em['Subject'] = subject
+    em.attach(MIMEText(body, 'plain'))
 
- #The sender email DO NOT EDIT ANY OF THIS!!!!!!!!!!!!!!!!!!!!!!!!!!
-emailSender = 'pythonbot562@gmail.com'
-emailPassword = 'ldbj bunk mpfp wktc'
-#Serisouly it will break do not change anything here lmao
+    # Define and attach the file
+    filename = data_control.getFileName()
+    full_path = os.path.join("TimeCards", filename)  # Correct the file path
 
- #A list of recievers that will recive said email
+    with open(full_path, 'rb') as attachments:  # Use the full path here
+        attachments_package = MIMEBase('application', 'octet-stream')
+        attachments_package.set_payload(attachments.read())
+        encoders.encode_base64(attachments_package)
+        attachments_package.add_header('Content-Disposition', f"attachment; filename= {filename}")
+        em.attach(attachments_package)
+    print("We will try and mail the: " + filename)
 
- #Self explainable variables
-subject = 'Time card'
-body = f"""
+    # Convert the email to a string
+    text = em.as_string()
 
+    # Send the email
+    try:
+        TIE_server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=120)
+        TIE_server.login(email_sender, email_password)
 
+        # Send the email to every person in the list
+        for person in receiver_emails:
+            TIE_server.sendmail(email_sender, person, text)
+        TIE_server.quit()
+        print("Email sent successfully.")
 
+    except smtplib.SMTPException as e:
+        print("SMTP error occurred:", e)
 
- """
-
-em = MIMEMultipart()
-em['From'] = emailSender
-em['To'] = ','.join(recieverEmails)
-em['Subject'] = subject
-em.attach(MIMEText(body, 'plain'))
-
- #Define the file to attach
-filename =  'test.txt'
-print("We will try and mail the: " + filename)
-
- #open the file in python as a binary
-attachments = open(filename, 'rb')
-
- #Encode as base 64
-attachments_package = MIMEBase('application', 'octet-stream')
-attachments_package.set_payload((attachments).read())
-encoders.encode_base64(attachments_package)
-attachments_package.add_header('Content-Disposition', "attachment; filename = " + filename)
-em.attach(attachments_package)
-text = em.as_string()
-
-
-
-
-try:
-
-     TIE_server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=120)
-     TIE_server.login(emailSender, emailPassword)
-
-     #Send the email to every person in the list 
-     for person in recieverEmails:
-      TIE_server.sendmail(emailSender, person, text)
-    #print("Success logging in email is being sent to: " + ReciverEmail)
-     TIE_server.quit()
-
-
-except smtplib.SMTPException as e:
-     print("SMTP error occurred:", e)
 
