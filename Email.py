@@ -4,23 +4,38 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
 import smtplib
-import ssl
+from datetime import datetime
 from DataManagement.DataController import DataControl
 
 def send_email():
     # Receiver emails
-    receiver_emails = ['']
+    receiver_emails = ['']  # Replace with actual receiver email
 
     # Sender email credentials
     email_sender = 'pythonbot562@gmail.com'
-    email_password = 'ldbj bunk mpfp wktc'
+    email_password = 'ldbj bunk mpfp wktc'  
 
-    # Email subject
-    subject = 'Time card'
+    # Check the current day and time
+    current_datetime = datetime.now()
+    is_saturday_midnight = current_datetime.weekday() == 5 and current_datetime.hour == 0
 
-    # Create DataControl instance and set the email body with CSV contents
+
     data_control = DataControl()
-    body = data_control.setEmailBody(data_control.getFileName())
+
+    # Set the email subject and body with CSV contents based on the day and time
+    if is_saturday_midnight:
+        subject = 'Weekly Time Card'
+        filename = data_control.getFileName()
+        folder = "Weekly Time Cards"
+    else:
+        subject = 'Daily Time Card'
+        filename = data_control.getDailyFileName()
+        folder = "Daily Time Cards"
+
+    # Ensure the file path is correct
+    full_path = os.path.join(folder, filename)
+
+    body = data_control.getEmailBody(filename, folder) if os.path.exists(full_path) else "File not found."
 
     # Create the email
     em = MIMEMultipart()
@@ -30,18 +45,15 @@ def send_email():
     em.attach(MIMEText(body, 'plain'))
 
     # Define and attach the file
-    filename = data_control.getFileName()
-    full_path = os.path.join("TimeCards", filename)  # Correct the file path
+    if os.path.exists(full_path):
+        with open(full_path, 'rb') as attachments:
+            attachments_package = MIMEBase('application', 'octet-stream')
+            attachments_package.set_payload(attachments.read())
+            encoders.encode_base64(attachments_package)
+            attachments_package.add_header('Content-Disposition', f"attachment; filename= {os.path.basename(full_path)}")
+            em.attach(attachments_package)
 
-    with open(full_path, 'rb') as attachments:  # Use the full path here
-        attachments_package = MIMEBase('application', 'octet-stream')
-        attachments_package.set_payload(attachments.read())
-        encoders.encode_base64(attachments_package)
-        attachments_package.add_header('Content-Disposition', f"attachment; filename= {filename}")
-        em.attach(attachments_package)
-    print("We will try and mail the: " + filename)
 
-    # Convert the email to a string
     text = em.as_string()
 
     # Send the email
@@ -58,4 +70,5 @@ def send_email():
     except smtplib.SMTPException as e:
         print("SMTP error occurred:", e)
 
-
+# Call the send_email function
+send_email()
