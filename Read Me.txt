@@ -1,0 +1,2 @@
+In order for you to recieve an email add your email to the "reciever_emails.txt" File this file gets created as soon as the app runs
+if it doesn't for some reason just create a file with that name and enter in every email that you want to recieve time card info

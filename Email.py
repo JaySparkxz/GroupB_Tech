@@ -7,44 +7,48 @@ import smtplib
 from datetime import datetime
 from DataManagement.DataController import DataControl
 
+#This method will allow us to add emails from a txt file in our current directory
+def get_receiver_emails(filename='receiver_emails.txt'):
+   
+    if not os.path.exists(filename):
+        with open(filename, 'w') as file:
+            file.write('\n')
+    
+    with open(filename, 'r') as file:
+        return [email.strip() for email in file.readlines()]
+
 def send_email():
-    # Receiver emails
-    receiver_emails = ['']  # Replace with actual receiver email
-
-    # Sender email credentials
     email_sender = 'pythonbot562@gmail.com'
-    email_password = 'ldbj bunk mpfp wktc'  
+    email_password = 'ldbj bunk mpfp wktc' 
 
-    # Check the current day and time
+    receiver_emails = get_receiver_emails()  
+
     current_datetime = datetime.now()
-    is_saturday_midnight = current_datetime.weekday() == 5 and current_datetime.hour == 0
-
+    is_saturday = current_datetime.weekday() == 5 # Weekly time card will be mailed out on SATURDAY at exactly 12:00 AM
 
     data_control = DataControl()
 
-    # Set the email subject and body with CSV contents based on the day and time
-    if is_saturday_midnight:
+    if is_saturday:
         subject = 'Weekly Time Card'
         filename = data_control.getFileName()
+        data_control.createFile()
+        print("Weekly Time Card has been Emailed")
         folder = "Weekly Time Cards"
     else:
         subject = 'Daily Time Card'
         filename = data_control.getDailyFileName()
+        data_control.createFile(daily=True)
         folder = "Daily Time Cards"
 
-    # Ensure the file path is correct
     full_path = os.path.join(folder, filename)
-
     body = data_control.getEmailBody(filename, folder) if os.path.exists(full_path) else "File not found."
 
-    # Create the email
     em = MIMEMultipart()
     em['From'] = email_sender
     em['To'] = ','.join(receiver_emails)
     em['Subject'] = subject
     em.attach(MIMEText(body, 'plain'))
 
-    # Define and attach the file
     if os.path.exists(full_path):
         with open(full_path, 'rb') as attachments:
             attachments_package = MIMEBase('application', 'octet-stream')
@@ -53,22 +57,17 @@ def send_email():
             attachments_package.add_header('Content-Disposition', f"attachment; filename= {os.path.basename(full_path)}")
             em.attach(attachments_package)
 
-
     text = em.as_string()
 
-    # Send the email
     try:
         TIE_server = smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=120)
         TIE_server.login(email_sender, email_password)
-
-        # Send the email to every person in the list
         for person in receiver_emails:
             TIE_server.sendmail(email_sender, person, text)
         TIE_server.quit()
         print("Email sent successfully.")
-
     except smtplib.SMTPException as e:
         print("SMTP error occurred:", e)
 
-# Call the send_email function
-send_email()
+
+get_receiver_emails()

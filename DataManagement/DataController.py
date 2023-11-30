@@ -218,7 +218,8 @@ class DataControl:
 
 
 
-# Example usagedata_control = DataControl()
+# Example usaged
+data_control = DataControl()
 
 # Creating a weekly time card file
 data_control.createFile()
@@ -227,7 +228,7 @@ data_control.createFile()
 # Creating a daily time card file for today's date
 data_control.createFile(daily=True)
 #To run a test just remove this uncomment the method call below
-##data_control.test_weekly_accumulation()
+#data_control.test_weekly_accumulation()
 
 
 
