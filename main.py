@@ -7,10 +7,14 @@ class Application(tk.Frame):
         tk.Frame.__init__(self, master)
         self.grid()
         self.createWidgets()
+    
     # A function to display the date on the console.
-    # Format YYYY-MM-DD HH:MM:SS:?????
+    # Format YYYY-MM-DD HH:MM:SS
     def printTime(self):
-        print(datetime.datetime.now())
+        current_time = datetime.datetime.now()
+        # This line blwo cuts off the decimals that were present in the original code
+        formatted_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        print(formatted_time)
 
     # Creates a button that runs the printTime function when clicked
     def createWidgets(self):
