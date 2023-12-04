@@ -3,16 +3,30 @@ import PySimpleGUI as sg
 from DataManagement.DataController import DataControl
 from datetime import date, datetime
 import EmailTimer
+    # ============= STATE MACHINE CLASS WILL FO HERE. ==============
+
 
 def main():
     # Made by Chris Athanasi
     sg.theme('DarkGrey5')
+    class ClockInStatus():
+            def __init__(self,):
+                self.IsClockIn = False
+                self.IsOnBreak = False
+            def ChangeClockIn(self):
+                self.IsClockIn = not self.IsClockIn
+                print(self.IsClockIn)
+            def ChangeOnBreak(self):
+                self.IsOnBreak = not self.IsOnBreak
+                
     
-    # ============= STATE MACHINE CLASS WILL FO HERE. ==============
-
+    STATUS = ClockInStatus()
+    
     # Define functions to handle "Clock In" and "Clock Out" button clicks
     def clock_in_action():
         first_name = window['first_name_input'].get()
+        # Checks to make sure the name is Characters, returns a True/False value. 
+        print(first_name.isalpha())
         last_name = window['last_name_input'].get()
         data_control = DataControl()
 
@@ -25,6 +39,11 @@ def main():
         
         sg.popup(f"Welcome: {first_name} ")
         print(f"Clock In: {first_name} {last_name}, Date: {current_date}, Time In: {current_time}")
+        
+        # Checks to see if user is clocked in, is not change the status. 
+        if not STATUS.IsClockIn:
+            STATUS.ChangeClockIn()
+            print(f'Is clocked in. {STATUS.IsClockIn}. Is on break {STATUS.IsOnBreak}')
 
     def break_action():
         first_name = window['first_name_input'].get()
@@ -39,6 +58,10 @@ def main():
 
         sg.popup("Break recorded.")
         print(f"Break: {first_name} {last_name}, Date: {current_date}, Time: {current_time}")
+        
+        if not STATUS.IsOnBreak:
+            STATUS.ChangeOnBreak()
+            print(f'Is clocked in. {STATUS.IsClockIn}. Is on break {STATUS.IsOnBreak}')
 
 
     def clock_out_action():
@@ -57,6 +80,10 @@ def main():
         
         sg.popup("Thanks for clocking out, enjoy your day!")
         print(f"Clock Out: {first_name} {last_name}, Date: {current_date}, Time Out: {current_time}")
+        
+        if STATUS.IsClockIn:
+            STATUS.ChangeClockIn()
+            print(f'Is clocked in. {STATUS.IsClockIn}. Is on break {STATUS.IsOnBreak}')
 
     # ============ LOGO IMAGE GOES HEREE =============
     # ============ IF PERMISSABLE, STATUS IDICATOR =============
@@ -77,12 +104,14 @@ def main():
         event, values = window.read()
         if event == sg.WIN_CLOSED or event == 'Cancel':
             break
-        # ============= STATE MACHINE IN ADDITION TO THE EVENT LISTENER ===============
-        if event == 'Clock In':
+        
+        # Additional Logic to action listener.  Clock in button won't activate if user is already clocked in, and use can't clock out if they're on break. 
+        
+        if event == 'Clock In' and not STATUS.IsClockIn:
             clock_in_action()
-        elif event == 'Clock Out':
+        elif event == 'Clock Out' and STATUS.IsClockIn and not STATUS.IsOnBreak:
             clock_out_action()
-        elif event == 'Break In/Out': 
+        elif event == 'Break In/Out' and STATUS.IsClockIn: 
             break_action()
 
     window.close()
