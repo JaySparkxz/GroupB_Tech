@@ -8,7 +8,7 @@ def main():
     # Made by Chris Athanasi
     sg.theme('DarkGrey5')
     
-    # ============= STATE MACHINE CLASS WILL FO HERE. ==============
+    # ============= STATE MACHINE CLASS WILL GO HERE. ==============
 
     # Define functions to handle "Clock In" and "Clock Out" button clicks
     def clock_in_action():
@@ -60,7 +60,10 @@ def main():
 
     # ============ LOGO IMAGE GOES HEREE =============
     # ============ IF PERMISSABLE, STATUS IDICATOR =============
-
+    logo_layout = [
+    [sg.Image(filename='path_to_your_logo.png', key='logo')],
+    [sg.Text('If Permissible, Status Indicator')]
+    ]
     input_layout = [[sg.Text('First Name:'), sg.InputText(key='first_name_input')],
                     [sg.Text('Last Name:'), sg.InputText(key='last_name_input')]]
     button_layout = [
