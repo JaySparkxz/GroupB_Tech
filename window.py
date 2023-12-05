@@ -58,14 +58,14 @@ def main():
         sg.popup("Thanks for clocking out, enjoy your day!")
         print(f"Clock Out: {first_name} {last_name}, Date: {current_date}, Time Out: {current_time}")
 
-    # ============ LOGO IMAGE GOES HEREE =============
+    # ============ LOGO IMAGE GOES HERE =============
     # ============ IF PERMISSABLE, STATUS IDICATOR =============
     logo_layout = [
-    [sg.Image(filename='path_to_your_logo.png', key='logo')],
+    [sg.Image(filename='C:\Users\FButt\Pictures\MCC PROJECT', key='logo')],
     [sg.Text('If Permissible, Status Indicator')]
     ]
-    input_layout = [[sg.Text('First Name:'), sg.InputText(key='first_name_input')],
-                    [sg.Text('Last Name:'), sg.InputText(key='last_name_input')]]
+    input_layout = [[sg.Text('Employee First Name:'), sg.InputText(key='first_name_input')],
+                    [sg.Text('Employee Last Name:'), sg.InputText(key='last_name_input')]]
     button_layout = [
         [sg.Button('Clock In', size=(10, 1))],
         [sg.Button('Clock Out', size=(10, 1))],
