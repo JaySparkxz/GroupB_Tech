@@ -143,6 +143,6 @@ def main():
         elif event == 'Break In/Out' and STATUS.IsClockIn: 
             break_action()
             # update window with new image
-        window['-IMAGE-'].update(data=ImageTk.PhotoImage(Image.open(get_file_name())))
+        window['-IMAGE-'].update(filename=get_file_name())
 
     window.close(); del window
